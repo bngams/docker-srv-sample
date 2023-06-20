@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  app2:
+    image: containous/whoami
+    ports:
+      - '5082:80'
+    networks:
+      - web
+    labels:
+      # http://traefik/....
+      # - 'traefik.http.routers.app2.rule=Pathprefix("/app2")'
+      - 'traefik.http.routers.app2.rule=Host("app2.docker")'
+
+networks:
+  web:
+    external: true

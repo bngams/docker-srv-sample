@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  app1:
+    build: .
+    # build:
+    #   context: src
+    #   ....
+    ports:
+      - '5081:80'
+    environment:
+      DB_HOST: mysql
+      DB_USER: app1_dbu
+      DB_PWD: secret
+      DB_NAME: app1_db
+    networks:
+      - web
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_USER: app1_dbu
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: app1_db
+      MYSQL_ROOT_PASSWORD: secret
+networks:
+  web:
+    external: true
+    
+

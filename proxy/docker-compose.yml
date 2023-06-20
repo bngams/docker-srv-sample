@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  reverse-proxy:
+    image: nginx # /!\ preciser la version x:alpine
+    restart: always
+    # resources:
+    # 
+    volumes:
+      - ../proxy/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 5083:80
+    networks:
+      - web
+networks:
+  web:
+    external: true
