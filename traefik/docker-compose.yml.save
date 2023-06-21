@@ -6,9 +6,6 @@ services:
     image: traefik:v2.10
     # Enables the web UI and tells Traefik to listen to docker
     command: --api.insecure=true --providers.docker
-    env_file:
-      - ../allowed_ips.env
-      - ../allowed_users.env
     ports:
       # The HTTP port
       - "5085:80"
@@ -19,6 +16,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - web
+    labels:
+      command:
 
 networks:
   web:

@@ -1,9 +1,10 @@
 version: '3.9'
 services:
     portainer-ce:
-        ports:
-            - '5086:9000'
-            - '9443:9443'
+        # only for testing purposes, can access with traefik labels
+        # ports:
+        #     - '5086:9000'
+        #     - '9443:9443'
         container_name: portainer
         restart: always
         volumes:
@@ -11,16 +12,39 @@ services:
             - 'portainer_data:/data'
         image: 'portainer/portainer-ce:latest'
         networks:
-            - net
+            - web
+        env_file:
+            - ../allowed_ips.env
+            - ../allowed_users.env
         labels:
             - "traefik.enable=true"
             - "traefik.http.services.portainer.loadbalancer.server.port=9000"
             # - "traefik.http.routers.portainer.rule=PathPrefix(`/portainer`)"
             - "traefik.http.routers.portainer.rule=Host(`portainer.docker`)"
+           
+            # Specific rules on this service
+            # Ip whitelist
+            # - "traefik.http.middlewares.portainer-ipwhitelist.ipwhitelist.sourcerange=78.124.119.169"
+            # BasicAuth adminadmin255*
+            # - "traefik.http.middlewares.portainer-auth.basicauth.users=admin:$apr1$hRID1U8f$qV1zErnxe3qhB8BMtKXMN/"
+            # Apply the middlewares named `portainer-auth` and `portainer-ipwhistelist` to the router named `portainer`
+            # - "traefik.http.routers.portainer.middlewares=portainer-ipwhitelist@docker, portainer-auth@docker"
+
+            # Specific rules but with common or generic config files (re use same configs part on many services)
+            # Ip whitelist
+            # - "traefik.http.middlewares.portainer-ipwhitelist.ipwhitelist.sourcerange=${ALLOWED_IPS}"
+            # BasicAuth adminadmin255*
+            # - "traefik.http.middlewares.portainer-auth.basicauth.usersfile=${HTPASSWD_PATH}"
+            # Apply the middlewares named `portainer-auth` and `portainer-ipwhistelist` to the router named `portainer`
+            # - "traefik.http.routers.portainer.middlewares=portainer-ipwhitelist@docker, portainer-auth@docker"
+
+            #  Global rules in traefik instance (most generic approach; we need to create the common middlewares on traefik)
+            # Apply the middlewares from traefik global conf to the router named `portainer`
+            # - "traefik.http.routers.portainer.middlewares=traefik-ipwhitelist@docker, traefik-auth@docker"
 
 volumes:
     portainer_data:
 
 networks:
-    net:
+    web:
         external: true
